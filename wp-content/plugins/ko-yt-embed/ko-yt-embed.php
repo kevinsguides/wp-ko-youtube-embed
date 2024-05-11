@@ -4,7 +4,7 @@
  * Plugin Name: KO YouTube Embedder
  * Plugin URI: https://kevino.dev
  * Description: Shortcodes to embed YT playlist videos
- * Version: 1.55
+ * Version: 0.01
  * Author: Kevin Olson
  * Author URI: https://kevino.dev
  * License: Proprietary

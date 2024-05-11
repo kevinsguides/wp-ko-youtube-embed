@@ -1,7 +1,9 @@
 # KO YouTube Embed Plugin
-An open source YouTube embedder
+An open source YouTube embedder for WordPress.
+License: MIT
+@author Kevin Olson
 
-This is very much a work in progress. I created this to embed YouTube videos in WordPress posts using YouTube API. Specifically to be able to load shorts and playlists automatically with shortcodes.
+This is very much a work in progress. I created this to embed YouTube videos in WordPress posts using YouTube API. Specifically to be able to load shorts and playlists automatically with shortcodes. Might not work well, or at all, with block themes.
 
 I'm working on improving the performance and considering adding additional features.
 
