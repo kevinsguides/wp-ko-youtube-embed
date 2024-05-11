@@ -12,6 +12,10 @@ A YouTube data API key is required for this to work. You will need to create a d
 
 Install plugin (upload all files to wp-content/plugins/ko-yt-embed)
 
+Paste API key into settings field under Settings -> KO YouTube Embed and hit save
+
+You can now hopefully use shortcodes in articles (or text editor field of Elementor)
+
 # Shortcodes
 
 ## A single video in landscape orientation

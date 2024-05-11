@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Plugin Name: KO YT Embed
+ * Plugin Name: KO YouTube Embedder
  * Plugin URI: https://kevino.dev
  * Description: Shortcodes to embed YT playlist videos
  * Version: 1.55
@@ -37,7 +37,7 @@ register_activation_hook(__FILE__, 'ko_yt_embed_activate');
 
 function ko_yt_embed_register_admin_menu()
 {
-    add_options_page('Ko YT Embed', 'Ko YT Embed', 'manage_options', 'ko-yt-embed-settings-group', 'ko_yt_embed_options_page');
+    add_options_page('KO YouTube Embedder', 'KO YouTube Embed', 'manage_options', 'ko-yt-embed-settings-group', 'ko_yt_embed_options_page');
 }
 
 add_action('admin_menu', 'ko_yt_embed_register_admin_menu');
