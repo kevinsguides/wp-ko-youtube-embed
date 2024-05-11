@@ -1,0 +1,22 @@
+#ignore everything
+*
+*/
+
+#dont ignore components/com_simplequiz
+!wp-content/
+wp-content/plugins
+!wp-content/plugins/ko-yt-embed
+!wp-content/plugins/ko-yt-embed/*
+
+
+
+
+
+
+
+
+!.gitignore
+!readme.md
+
+
+
