@@ -1,6 +1,4 @@
 
-console.log('ko-yt-embed thumbnailhandler.js loaded');
-
 //when someone clicks a youtube thumbnail, load the video in its place
 
 
@@ -30,7 +28,6 @@ document.querySelectorAll('.ko-yt-vid-container').forEach(item => {
 
     let latestShortFromPlaylistId = item.getAttribute('data-latest-reel-playlist');
     if (latestShortFromPlaylistId != null){
-        console.log('latestShortFromPlaylistId: ' + latestShortFromPlaylistId);
         let fetchLink = '/wp-json/ko-yt-embed/v1/latest-in-playlist/' + latestShortFromPlaylistId;
         async function fetchLatestInPlaylist() {
             let response = await fetch(fetchLink);
@@ -39,11 +36,7 @@ document.querySelectorAll('.ko-yt-vid-container').forEach(item => {
 
             let videoId = data.snippet.resourceId.videoId;
             let thumbUrl = data.snippet.thumbnails.maxres.url;
-            console.log(data);
-            console.log("i think latest video is is" , videoId);
             renderVideo(item, videoId, thumbUrl);
-
-            
         }
         fetchLatestInPlaylist();
         
@@ -67,7 +60,6 @@ function renderVideo(item, videoId, thumbUrl = null){
     async function fetchThumbnail() {
         let response = await fetch(fetchLink);
         let data = await response.json();
-        console.log(data);
         item.querySelector('.ko-yt-img-thumbnail').src = data;
     }
 
