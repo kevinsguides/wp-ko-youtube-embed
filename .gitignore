@@ -2,14 +2,14 @@
 *
 */
 
-#dont ignore components/com_simplequiz
-!wp-content/
+#dont ignore wp-content/plugins/ko-yt-embed/**
+wp-content
+!wp-content
 wp-content/plugins
+!wp-content/plugins
+wp-content/plugins/ko-yt-embed
 !wp-content/plugins/ko-yt-embed
-!wp-content/plugins/ko-yt-embed/*
-
-
-
+!wp-content/plugins/ko-yt-embed/**
 
 
 
