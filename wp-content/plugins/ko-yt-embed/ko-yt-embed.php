@@ -63,6 +63,16 @@ function ko_yt_embed_register_settings()
 add_action('admin_init', 'ko_yt_embed_register_settings');
 
 
+function add_script_style(){
+
+    wp_enqueue_style('ko-yt-embed-style', plugins_url('ko-yt-embed.css', __FILE__));
+    wp_enqueue_script('ko-yt-embed-script', plugins_url('thumbnailhandler.js', __FILE__), array(), false, [
+        'defer' => 'defer'
+    ]);
+    wp_localize_script('ko-yt-embed-script', 'koYtEmbed', array(
+        'baseUrl' => site_url(),
+    ));
+}
 
 /**
  * Shows the latest youtube video from a reels/shorts playlist in portrait orientation
@@ -73,13 +83,8 @@ function shortcode_latest_short_from_playlist($atts)
     // Get the latest video from a playlist
     $playlistUrl = $atts['playlist'];
 
-    // add stylesheet
-    wp_enqueue_style('ko-yt-embed-style', plugins_url('ko-yt-embed.css', __FILE__));
+    add_script_style();
 
-    //add js with defer
-    wp_enqueue_script('ko-yt-embed-script', plugins_url('thumbnailhandler.js', __FILE__), array(), false, [
-        'defer' => 'defer'
-    ]);
 
     $output = '
     <div class="ko-yt-vid-container"
@@ -117,13 +122,7 @@ function shortcode_playlist_grid($atts)
 
     $playlist = get_playlist($playlistUrl, $maxResults);
 
-    // add stylesheet
-    wp_enqueue_style('ko-yt-embed-style', plugins_url('ko-yt-embed.css', __FILE__));
-
-    //add js with defer
-    wp_enqueue_script('ko-yt-embed-script', plugins_url('thumbnailhandler.js', __FILE__), array(), false, [
-        'defer' => 'defer'
-    ]);
+    add_script_style();
 
     // print all videos in playlist
     $output = '<div class="koyt-grid-wrapper">';
@@ -141,7 +140,6 @@ function shortcode_playlist_grid($atts)
     return $output;
 }
 add_shortcode('ko-yt-grid', 'shortcode_playlist_grid');
-
 
 
 /**
@@ -191,7 +189,7 @@ function get_video($videoId){
             try{
                 $videoUrl = 'https://www.googleapis.com/youtube/v3/videos?part=snippet&id=' . $videoId . '&key=' . $apiKey;
                 $video = json_decode(file_get_contents($videoUrl));
-                set_transient('ko_yt_embed_video_' . $videoId, $video, 60 * 60 * 1);
+                set_transient('ko_yt_embed_video_' . $videoId, $video, 60 * 60 * 12);
                 //set backup transient for 48 hours
                 set_transient('ko_yt_embed_video_backup_' . $videoId, $video, 60 * 60 * 48);
             }
@@ -209,9 +207,10 @@ function get_video($videoId){
 }
 
 
-
+/**
+ * Displays a single video in landscape orientation
+ */
 function shortcode_single_video($atts){
-
     // Define default values for your shortcode attributes
     $atts = shortcode_atts(
         array(
@@ -223,13 +222,7 @@ function shortcode_single_video($atts){
     $videoUrl = $atts['video'];
     $videoId = substr($videoUrl, strpos($videoUrl, 'v=') + 2);
 
-    // add stylesheet
-    wp_enqueue_style('ko-yt-embed-style', plugins_url('ko-yt-embed.css', __FILE__));
-
-    //add js
-    wp_enqueue_script('ko-yt-embed-script', plugins_url('thumbnailhandler.js', __FILE__), array(), false, [
-        'defer' => 'defer'
-    ]);
+    add_script_style();
 
     // print all videos in playlist
     $output = '
@@ -243,9 +236,38 @@ function shortcode_single_video($atts){
 
 
 }
-
 add_shortcode('ko-yt-single', 'shortcode_single_video');
 
+/**
+ * Displays a single video in reel/short portrait orientation
+ */
+function shortcode_single_video_short($atts){
+
+    $atts = shortcode_atts(
+        array(
+            'video' => '', // default video URL
+        ),
+        $atts
+    );
+
+    $videoUrl = $atts['video'];
+    $videoId = substr($videoUrl, strpos($videoUrl, 'shorts/') + 7, 11);
+
+
+    add_script_style();
+
+    // print all videos in playlist
+    $output = '
+    <div class="ko-yt-vid-container"
+    data-video-id="' . $videoId . '"
+    data-orientation="portrait" title="Click to play">
+        <img class="ko-yt-brandicon" src="' . plugins_url('youtube.svg', __FILE__) . '">
+        <img class="ko-yt-img-thumbnail" src="' . plugins_url('youtube-bg-loading.svg', __FILE__) . '">
+    </div>';
+    return $output;
+
+}
+add_shortcode('ko-yt-single-short', 'shortcode_single_video_short');
 
 // REST
 
@@ -259,11 +281,14 @@ function fetch_video_data($request)
 }
 
 function fetch_video_thumbnail($request){
+    
     $videoId = $request['vid'];
     $video = get_video($videoId);
-    return $video->items[0]->snippet->thumbnails->maxres->url;
-
+    $thumbnailUrl = $video->items[0]->snippet->thumbnails->maxres->url;
+    // return url
+    return $thumbnailUrl;
 }
+
 
 function fetch_latest_in_playlist($request)
 {
@@ -295,7 +320,7 @@ function register_ko_yt_rest_route()
         ),
     ));
 
-    register_rest_route('/ko-yt-embed/v1', 'video-thumb/(?P<vid>[a-zA-Z0-9_-]+)', array(
+    register_rest_route('ko-yt-embed/v1', '/video-thumb/(?P<vid>[a-zA-Z0-9_-]+)', array(
         'methods' => 'GET',
         'callback' => 'fetch_video_thumbnail',
         'args' => array(

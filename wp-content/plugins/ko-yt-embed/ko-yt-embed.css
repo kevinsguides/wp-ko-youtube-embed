@@ -125,26 +125,9 @@
     overflow: hidden;
 }
 
-.ko-yt-vid-container[data-orientation="portrait"]{
-    padding-top: 177.77%;
-}
-
-.ko-yt-vid-container[data-orientation="portrait"] .ko-yt-img-thumbnail{
-    position: absolute;
-    top: 0;
-    height: 100%;
-    object-fit: cover;
-    
-
-}
-
-.ko-yt-vid-container[data-orientation="landscape"]{
-    padding-top: 56.25%;
-}
-
 
 
 .ko-yt-img-thumbnail{
-    position: absolute;
-    top: 0;
+    width: 100%;
+    height: auto;
 }

@@ -8,7 +8,7 @@ I'm working on improving the performance and considering adding additional featu
 If you like this plugin or want support please [leave a tip](https://kevinsguides.com/tips).
 
 # Setup
-A YouTube data API key is required for this to work. You will need to create a data api key at [Google Cloud Console](https://console.cloud.google.com). This is free (up to a limit you likely won't hit).
+A YouTube Data API v3 key is required for this to work. You will need to create a data api key at [Google Cloud Console](https://console.cloud.google.com). This is free (up to a limit you likely won't hit).
 
 Install plugin (upload all files to wp-content/plugins/ko-yt-embed)
 
