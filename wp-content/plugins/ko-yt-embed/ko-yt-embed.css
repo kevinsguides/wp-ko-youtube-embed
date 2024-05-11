@@ -38,7 +38,7 @@
 .koyt-grid-wrapper {
     display: grid;
     grid-template-columns: repeat(var(--koytcolumns), 1fr);
-    gap: 20px; /* adjust this value to change the space between videos */
+    gap: var(--koytgap);
 }
 
 @media (max-width: 768px) {
@@ -48,29 +48,30 @@
 }
 
 /* style */
-.koyt-videobox.default{
+.koyt-videobox.lightcard{
     background-color: #f9f9f9;
     padding: 5px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
     border: 1px solid #ddd;
+    color: black;
 }
 
-.koyt-videobox .koyt-videotitle{
+.koyt-videobox.lightcard .koyt-videotitle, .koyt-videobox.darkcard .koyt-videotitle{
     font-size: 1.2em;
     font-weight: bold;
     margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     /* max 1 line */
-    color: black;
+    
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
 
 }
 
-.koyt-videobox.dark{
+.koyt-videobox.darkcard{
     background-color: #333;
     color: white;
     padding: 5px;

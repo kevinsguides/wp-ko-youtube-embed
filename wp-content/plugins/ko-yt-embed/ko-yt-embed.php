@@ -112,7 +112,8 @@ function shortcode_playlist_grid($atts)
             'max' => 4, // default number of videos to display
             'playlist' => '', // default playlist URL
             'columns' => '2', // default number of columns
-            'style' => 'default',
+            'theme' => '',
+            'gap' => '',
         ),
         $atts
     );
@@ -125,6 +126,14 @@ function shortcode_playlist_grid($atts)
         $playlistId = $playlistUrl;
     }
 
+    //check if $gap is numeric
+    if (!is_numeric($atts['gap'])) {
+        $atts['gap'] = '10px';
+    }
+    else{
+        $atts['gap'] = $atts['gap'] . 'px';
+    }
+
     $maxResults = $atts['max']; // number of videos to display
 
     $playlist = get_playlist($playlistId, $maxResults);
@@ -132,10 +141,10 @@ function shortcode_playlist_grid($atts)
     add_script_style();
 
     // print all videos in playlist
-    $output = '<div class="koyt-grid-wrapper" style="--koytcolumns: ' . $atts['columns'] . ';">';
+    $output = '<div class="koyt-grid-wrapper" style="--koytcolumns: ' . $atts['columns'] . '; --koytgap: ' . $atts['gap'] . ';">';
     foreach($playlist->items as $video){
         $output .= '
-        <div class="koyt-videobox ' . $atts['style'] . '">
+        <div class="koyt-videobox ' . $atts['theme'] . '">
             <span class="koyt-videotitle">' . $video->snippet->title . '</span>
             <div class="ko-yt-vid-container" data-orientation="landscape" data-video-id="' . $video->snippet->resourceId->videoId . '" title="Click to play">
                 <img class="ko-yt-brandicon" src="' . plugins_url('youtube.svg', __FILE__) . '">
@@ -145,6 +154,7 @@ function shortcode_playlist_grid($atts)
         </div>';
     }
     $output .= '</div>';
+
     return $output;
 }
 add_shortcode('ko-yt-grid', 'shortcode_playlist_grid');
@@ -159,7 +169,7 @@ function get_playlist($playlistId, $maxResults = 1){
 
 
     //Try to get playlist from transient
-    $playlist = get_transient('ko_yt_embed_playlist_' . $playlistId);
+    $playlist = get_transient('ko_yt_embed_playlist_' . $playlistId . $maxResults);
 
     //If not found, get playlist from API and set transient
     if (!$playlist) {
@@ -168,13 +178,13 @@ function get_playlist($playlistId, $maxResults = 1){
         try{
             $playlistUrl = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults='.$maxResults.'&playlistId=' . $playlistId . '&key=' . $apiKey;
             $playlist = json_decode(file_get_contents($playlistUrl));
-            set_transient('ko_yt_embed_playlist_' . $playlistId, $playlist, 60 * 60 * 1);
+            set_transient('ko_yt_embed_playlist_' . $playlistId . $maxResults, $playlist, 60 * 60 * 1);
             //set backup transient for 48 hours
-            set_transient('ko_yt_embed_playlist_backup_' . $playlistId, $playlist, 60 * 60 * 48);
+            set_transient('ko_yt_embed_playlist_backup_' . $playlistId . $maxResults, $playlist, 60 * 60 * 48);
         }
         catch(Exception $e){
             //If API call fails, try to get from backup transient
-            $playlist = get_transient('ko_yt_embed_playlist_backup_' . $playlistId);
+            $playlist = get_transient('ko_yt_embed_playlist_backup_' . $playlistId. $maxResults);
 
         }
 
