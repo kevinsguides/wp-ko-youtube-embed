@@ -111,29 +111,37 @@ function shortcode_playlist_grid($atts)
         array(
             'max' => 4, // default number of videos to display
             'playlist' => '', // default playlist URL
+            'columns' => '2', // default number of columns
+            'style' => 'default',
         ),
         $atts
     );
 
-
+    //is playlist a URL or ID?
     $playlistUrl = $atts['playlist'];
+    if (strpos($playlistUrl, 'list=') !== false) {
+        $playlistId = substr($playlistUrl, strpos($playlistUrl, 'list=') + 5);
+    } else {
+        $playlistId = $playlistUrl;
+    }
 
     $maxResults = $atts['max']; // number of videos to display
 
-    $playlist = get_playlist($playlistUrl, $maxResults);
+    $playlist = get_playlist($playlistId, $maxResults);
 
     add_script_style();
 
     // print all videos in playlist
-    $output = '<div class="koyt-grid-wrapper">';
+    $output = '<div class="koyt-grid-wrapper" style="--koytcolumns: ' . $atts['columns'] . ';">';
     foreach($playlist->items as $video){
         $output .= '
-        <div class="koyt-grid-item">
-            <span class="koyt-grid-video-title">' . $video->snippet->title . '</span>
-            <div class="ko-yt-embed-thumbnail" data-video-id="' . $video->snippet->resourceId->videoId . '" data-aspect-ratio="landscape" title="Click to play">
+        <div class="koyt-videobox ' . $atts['style'] . '">
+            <span class="koyt-videotitle">' . $video->snippet->title . '</span>
+            <div class="ko-yt-vid-container" data-orientation="landscape" data-video-id="' . $video->snippet->resourceId->videoId . '" title="Click to play">
                 <img class="ko-yt-brandicon" src="' . plugins_url('youtube.svg', __FILE__) . '">
-                <img class="ko-yt-img-landscape" src="' . $video->snippet->thumbnails->maxres->url . '">
+                <img class="ko-yt-img-thumbnail" src="' . plugins_url('youtube-bg-loading.svg', __FILE__) . '">
             </div>
+            
         </div>';
     }
     $output .= '</div>';
