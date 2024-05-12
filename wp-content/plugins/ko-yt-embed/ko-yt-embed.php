@@ -167,6 +167,10 @@ add_shortcode('ko-yt-grid', 'shortcode_playlist_grid');
  */
 function get_playlist($playlistId, $maxResults = 1){
 
+    //check if playlistID is a URL or ID
+    if (strpos($playlistId, 'list=') !== false) {
+        $playlistId = substr($playlistId, strpos($playlistId, 'list=') + 5);
+    }
 
     //Try to get playlist from transient
     $playlist = get_transient('ko_yt_embed_playlist_' . $playlistId . $maxResults);
@@ -315,9 +319,7 @@ function fetch_latest_in_playlist($request)
     $playlist = get_playlist($playlistId);
 
     $latestVideo = $playlist->items[0];
-
     return $latestVideo;
-
 
 }
 
@@ -350,8 +352,8 @@ function register_ko_yt_rest_route()
         ),
     ));
 
-    register_rest_route('ko-yt-embed/v1', '/latest-in-playlist/(?P<pid>[a-zA-Z0-9_-]+)', array(
-        'methods' => 'GET',
+    register_rest_route('ko-yt-embed/v1', '/latest-in-playlist', array(
+        'methods' => 'POST',
         'callback' => 'fetch_latest_in_playlist',
         'args' => array(
             'pid' => array(
@@ -360,6 +362,7 @@ function register_ko_yt_rest_route()
                 }
             )
         ),
+
     ));
 
 

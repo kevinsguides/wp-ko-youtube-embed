@@ -18,8 +18,19 @@
     width: 10%;
     min-width: 50px;
     cursor: pointer;
+    z-index: 10;
 }
 
+.ko-yt-vid-container[data-orientation="portrait"] .ko-yt-img-thumbnail{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: 100%;
+    width: auto;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    cursor: pointer;
+}
 .ko-yt-img-thumbnail{
     width: 100%;
     height: auto;
