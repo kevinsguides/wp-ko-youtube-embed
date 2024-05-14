@@ -54,10 +54,8 @@ document.addEventListener("DOMContentLoaded", function () {
         .then((response) => response.json())
         .then((data) => {
             console.dir(data);
-            let videoId = data.snippet.resourceId.videoId;
-            let thumbUrl = data.snippet.thumbnails.maxres.url;
-            console.log("video id: " + videoId);
-            console.log("thumb url: " + thumbUrl);
+            let videoId = data.id;
+            let thumbUrl = data.thumb;
             renderVideo(item, videoId, thumbUrl);
         })
         .catch((error) => {

@@ -4,10 +4,10 @@
  * Plugin Name: KO YouTube Embedder
  * Plugin URI: https://kevino.dev
  * Description: Shortcodes to embed YT playlist videos
- * Version: 0.01
+ * Version: 0.05
  * Author: Kevin Olson
  * Author URI: https://kevino.dev
- * License: Proprietary
+ * License: MIT
  */
 
  /*
@@ -265,7 +265,7 @@ function get_videos_from_playlist($playlistId, $maxResults = 1){
             $video = [
                 'id' => $item->snippet->resourceId->videoId,
                 'title' => $item->snippet->title,
-                'thumb' => $item->snippet->thumbnails->medium->url,
+                'thumb' => $item->snippet->thumbnails->maxres->url,
                 'description' => $item->snippet->description,
             ];
             $videos[] = $video;
@@ -398,10 +398,9 @@ function fetch_latest_in_playlist($request)
 {
 
     $playlistId = $request['pid'];
-    $playlist = get_playlist($playlistId);
+    $playlist = get_videos_from_playlist($playlistId, 1);
 
-    $latestVideo = $playlist->items[0];
-    return $latestVideo;
+    return $playlist[0];
 
 }
 
