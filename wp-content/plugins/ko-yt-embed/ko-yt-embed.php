@@ -136,36 +136,100 @@ function shortcode_playlist_grid($atts)
 
     $maxResults = $atts['max']; // number of videos to display
 
-    $playlist = get_playlist($playlistId, $maxResults);
+    $videos = get_videos_from_playlist($playlistId, $maxResults);
 
     add_script_style();
 
+
+    return render_grid($videos, $atts);
+}
+add_shortcode('ko-yt-grid', 'shortcode_playlist_grid');
+
+
+
+/**
+ * Displays a grid of latest videos from a channel in landscape orientation with a title above each video
+ */
+function shortcode_latest_from_channel_grid($atts){
+    $atts = shortcode_atts(
+        array(
+            'max' => 4, // default number of videos to display
+            'channel' => '', // default channel name
+            'columns' => '2', // default number of columns
+            'theme' => '',
+            'gap' => '',
+        ),
+        $atts
+    );
+
+    $channelName = $atts['channel'];
+
+    //check if $gap is numeric
+    if (!is_numeric($atts['gap'])) {
+        $atts['gap'] = '10px';
+    }
+    else{
+        $atts['gap'] = $atts['gap'] . 'px';
+    }
+
+    $maxResults = $atts['max']; // number of videos to display
+
+    $videos = get_latest_videos_from_channel($channelName);
+
+    add_script_style();
+
+    return render_grid($videos, $atts);
+
+}
+add_shortcode('ko-yt-channel-grid', 'shortcode_latest_from_channel_grid');
+
+function get_latest_videos_from_channel($channelID){
+    
+        $apiKey = get_option('ko_yt_api_key');
+        $channelUrl = 'https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=' . $channelID . '&order=date&maxResults=4&key=' . $apiKey;
+        $data = json_decode(file_get_contents($channelUrl));
+        $videos = [];
+        foreach($data->items as $item){
+            if($item->id->kind == 'youtube#video'){
+                $video = [
+                    'id' => $item->id->videoId,
+                    'title' => $item->snippet->title,
+                    'thumb' => $item->snippet->thumbnails->medium->url,
+                    'description' => $item->snippet->description,
+                ];
+                $videos[] = $video;
+            }
+        }
+        return $videos;
+
+}
+
+
+function render_grid($videos, $atts){
+
     // print all videos in playlist
     $output = '<div class="koyt-grid-wrapper" style="--koytcolumns: ' . $atts['columns'] . '; --koytgap: ' . $atts['gap'] . ';">';
-    foreach($playlist->items as $video){
+    foreach($videos as $video){
         $output .= '
         <div class="koyt-videobox ' . $atts['theme'] . '">
-            <span class="koyt-videotitle">' . $video->snippet->title . '</span>
-            <div class="ko-yt-vid-container" data-orientation="landscape" data-video-id="' . $video->snippet->resourceId->videoId . '" title="Click to play">
+            <span class="koyt-videotitle">' . $video['title'] . '</span>
+            <div class="ko-yt-vid-container" data-orientation="landscape" data-video-id="' . $video['id'] . '" title="Click to play">
                 <img class="ko-yt-brandicon" src="' . plugins_url('youtube.svg', __FILE__) . '">
-                <img class="ko-yt-img-thumbnail" src="' . plugins_url('youtube-bg-loading.svg', __FILE__) . '">
+                <img class="ko-yt-img-thumbnail" src="'.$video['thumb'].'">
             </div>
-            
         </div>';
     }
     $output .= '</div>';
 
     return $output;
 }
-add_shortcode('ko-yt-grid', 'shortcode_playlist_grid');
-
 
 /**
  * Gets a playlist from the YouTube API
  * @param string $playlistUrl The URL of the playlist
  * @return object The playlist object (decoded JSON)
  */
-function get_playlist($playlistId, $maxResults = 1){
+function get_videos_from_playlist($playlistId, $maxResults = 1){
 
     //check if playlistID is a URL or ID
     if (strpos($playlistId, 'list=') !== false) {
@@ -194,7 +258,21 @@ function get_playlist($playlistId, $maxResults = 1){
 
     }
 
-    return $playlist;
+
+    $videos = [];
+    foreach($playlist->items as $item){
+        if($item->kind == 'youtube#playlistItem'){
+            $video = [
+                'id' => $item->snippet->resourceId->videoId,
+                'title' => $item->snippet->title,
+                'thumb' => $item->snippet->thumbnails->medium->url,
+                'description' => $item->snippet->description,
+            ];
+            $videos[] = $video;
+        }
+    }
+
+    return $videos;
 
 }
 
@@ -273,8 +351,12 @@ function shortcode_single_video_short($atts){
     );
 
     $videoUrl = $atts['video'];
-    $videoId = substr($videoUrl, strpos($videoUrl, 'shorts/') + 7, 11);
-
+    //check if url or id
+    if (strpos($videoUrl, 'shorts/') !== false) {
+        $videoId = substr($videoUrl, strpos($videoUrl, 'shorts/') + 7, 11);
+    } else {
+        $videoId = $videoUrl;
+    }
 
     add_script_style();
 
