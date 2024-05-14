@@ -1,13 +1,12 @@
 .ko-yt-vid-container{
     position: relative;
-    padding-bottom: 56.25%;
-    height: 0;
+    aspect-ratio: 16/9;
     overflow: hidden;
 
 }
 
 .ko-yt-vid-container[data-orientation="portrait"]{
-    padding-bottom: 177.77%;
+    aspect-ratio: 9/16;
 }
 
 .ko-yt-brandicon{
