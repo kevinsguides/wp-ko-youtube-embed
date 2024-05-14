@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const baseUrl = koYtEmbed.baseUrl;
 
   document.querySelectorAll(".ko-yt-embed-thumbnail").forEach((item) => {
-    console.log("found a thumbnail");
+
     let videoId = item.getAttribute("data-video-id");
     let aspectRatio = item.getAttribute("data-aspect-ratio");
     item.addEventListener("click", (event) => {
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll(".ko-yt-vid-container").forEach((item) => {
     // render based off id
     let videoId = item.getAttribute("data-video-id");
-    console.log("video id: " + videoId);
+
     if (videoId != null) {
       renderVideo(item, videoId);
     }
@@ -34,13 +34,9 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
     if (latestShortFromPlaylistId != null) {
-      // Define your data
       let data = {
         pid: latestShortFromPlaylistId,
       };
-      console.log("playlist id: " + latestShortFromPlaylistId);
-      console.log("sending data to server..." + JSON.stringify(data))
-      // Make the POST request
       fetch(
         baseUrl + "/wp-json/ko-yt-embed/v1/latest-in-playlist",
         {
@@ -72,7 +68,6 @@ document.addEventListener("DOMContentLoaded", function () {
    * @param {*} thumbUrl - optional, url to thumbnail image if we already have it
    */
   function renderVideo(item, videoId, thumbUrl = null) {
-    console.log("baseurl is " + baseUrl);
 
     let orientation = item.getAttribute("data-orientation");
 
@@ -85,11 +80,9 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
           let response = await fetch(fetchLink);
           let data = await response.json();
-          console.log("fetched thumbnail: " + data);
           item.querySelector(".ko-yt-img-thumbnail").src = data;
         } catch (error) {
           console.error("KOYT Error:", error);
-          console.log("data: " + data);
         }
       }
 
@@ -97,8 +90,6 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
       item.querySelector(".ko-yt-img-thumbnail").src = thumbUrl;
     }
-
-    console.log("attempting to render video with id: " + videoId);
 
     item.addEventListener("click", (event) => {
       if (orientation == "portrait") {
