@@ -154,7 +154,7 @@ function shortcode_latest_from_channel_grid($atts){
     $atts = shortcode_atts(
         array(
             'max' => 4, // default number of videos to display
-            'channel' => '', // default channel name
+            'channel' => '', // channel id
             'columns' => '2', // default number of columns
             'theme' => '',
             'gap' => '',
@@ -162,7 +162,7 @@ function shortcode_latest_from_channel_grid($atts){
         $atts
     );
 
-    $channelName = $atts['channel'];
+    $channelID = $atts['channel'];
 
     //check if $gap is numeric
     if (!is_numeric($atts['gap'])) {
@@ -174,7 +174,7 @@ function shortcode_latest_from_channel_grid($atts){
 
     $maxResults = $atts['max']; // number of videos to display
 
-    $videos = get_latest_videos_from_channel($channelName);
+    $videos = get_latest_videos_from_channel($channelID, $maxResults);
 
     add_script_style();
 
@@ -183,10 +183,10 @@ function shortcode_latest_from_channel_grid($atts){
 }
 add_shortcode('ko-yt-channel-grid', 'shortcode_latest_from_channel_grid');
 
-function get_latest_videos_from_channel($channelID){
+function get_latest_videos_from_channel($channelID, $maxResults = 4){
     
         $apiKey = get_option('ko_yt_api_key');
-        $channelUrl = 'https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=' . $channelID . '&order=date&maxResults=4&key=' . $apiKey;
+        $channelUrl = 'https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=' . $channelID . '&order=date&maxResults=' . $maxResults . '&key=' . $apiKey;
         $data = json_decode(file_get_contents($channelUrl));
         $videos = [];
         foreach($data->items as $item){
